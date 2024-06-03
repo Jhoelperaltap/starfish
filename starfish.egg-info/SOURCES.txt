@@ -1,0 +1,13 @@
+README.md
+setup.py
+starfish/__init__.py
+starfish.egg-info/PKG-INFO
+starfish.egg-info/SOURCES.txt
+starfish.egg-info/dependency_links.txt
+starfish.egg-info/entry_points.txt
+starfish.egg-info/top_level.txt
+starfish/core/__init__.py
+starfish/core/cli.py
+starfish/core/framework.py
+starfish/plugins/__init__.py
+tests/__init__.py

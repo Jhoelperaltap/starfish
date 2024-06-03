@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items - Starfish</title>
+</head>
+<body>
+    <h1>Items</h1>
+    <a href="/items/new">Create New Item</a>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.name }} - {{ item.description }} 
+                <a href="/items/edit/{{ item.id }}">Edit</a> 
+                <form action="/items/delete/{{ item.id }}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
