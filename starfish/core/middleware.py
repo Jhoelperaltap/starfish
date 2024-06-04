@@ -1,4 +1,3 @@
-# starfish/core/middleware.py
 
 class MiddlewareManager:
     def __init__(self):

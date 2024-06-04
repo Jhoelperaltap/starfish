@@ -1,4 +1,3 @@
-# starfish/core/session.py
 
 import os
 import base64

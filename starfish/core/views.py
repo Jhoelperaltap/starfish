@@ -1,5 +1,4 @@
 
-
 class View:
     def get(self, request, session, *args):
         raise NotImplementedError()

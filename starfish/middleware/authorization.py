@@ -1,5 +1,4 @@
 
-
 from starfish.auth.roles import has_permission
 
 class AuthorizationMiddleware:
