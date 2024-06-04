@@ -1,4 +1,3 @@
-# starfish/middleware/logger.py
 
 class LoggerMiddleware:
     def process_request(self, request):

@@ -1,4 +1,3 @@
-
 import argparse
 from starfish.core.app import App
 from starfish.core.framework import runserver
@@ -16,12 +15,21 @@ from starfish.forms import LoginForm
 from starfish.views import FileUploadView, FileDownloadView
 from starfish.views import ItemListView, ItemCreateView, ItemUpdateView, ItemDeleteView
 from starfish.core.middleware import middleware
+from starfish.core.swagger import configure_swagger
+from starfish.core.rate_limiting import configure_rate_limiting
 from urllib.parse import parse_qs
+from flask import Flask, request
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-import config
+# Asegúrate de que config.py esté en el mismo directorio que cli.py
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+try:
+    import config
+except ImportError as e:
+    print(f"Error importing config module: {e}")
+    sys.exit(1)
 
 def home(request, session, *args):
     return render_template('home.html', {'title': 'Home'})
@@ -51,17 +59,22 @@ def api_example(request, session, *args):
         "user": session.get('user', 'Guest')
     }
     return data
-
 def main():
+    app = Flask(__name__)
+    configure_swagger(app)
+    configure_rate_limiting(app)
+
     parser = argparse.ArgumentParser(description='Starfish CLI')
     parser.add_argument('command', help='Subcommand to run')
     args = parser.parse_args()
 
-    cache = Cache(host=config.CACHE_HOST,
-                  port=config.CACHE_PORT,
-                  db=config.CACHE_DB)
+    print(f"Command received: {args.command}")  # Mensaje de depuración
+
+    cache = Cache(host=config.CACHE_HOST, port=config.CACHE_PORT, db=config.CACHE_DB)
 
     if args.command == 'runserver':
+        print("Initializing database...")
+
         db_session_factory = init_db(config.DATABASE_URI)
         global db_session
         db_session = db_session_factory
@@ -76,7 +89,8 @@ def main():
         add_route("/items/new", ItemCreateView().dispatch)
         add_route("/items/edit/(\\d+)", ItemUpdateView().dispatch)
         add_route("/items/delete/(\\d+)", ItemDeleteView().dispatch)
-        
+
+        # Añadir rutas para manejo de archivos
         add_route("/upload", FileUploadView().dispatch)
         add_route("/download/(.+)", FileDownloadView().dispatch)
 
@@ -84,10 +98,13 @@ def main():
         middleware.add_middleware(AuthMiddleware())
         middleware.add_middleware(authorization_middleware)
 
-        runserver()
+        app.run(debug=True, host='0.0.0.0', port=8000)
     elif args.command == 'runwebsocket':
         start_websocket_server()
     elif args.command == 'runtasks':
         celery.start()
     else:
         print(f"Unknown command: {args.command}")
+
+if __name__ == "__main__":
+    main()

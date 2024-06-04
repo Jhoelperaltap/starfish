@@ -1,5 +1,3 @@
-# starfish/core/router.py
-
 import re
 from jinja2 import Environment, FileSystemLoader
 
